@@ -82,7 +82,7 @@ parseIdentifier = do
     rest  <- many parseAlphaNum
     let full = first : rest
     if full `elem` res then
-        fail ("Reserved keyword: " ++ full)
+        unexpected ("reserved keyword: " ++ full)
     else
         return $ Identifier $ first : rest
 
