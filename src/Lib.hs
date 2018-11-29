@@ -31,7 +31,7 @@ instance Show Expr where
 data Decl = DeclVar Identifier (Maybe Type) (Maybe Expr) Bool
 
 instance Show Decl where
-    show (DeclVar ident typ expr mut) = bool "var " "let " mut ++ show ident ++ maybe ""  ((++) ": " . show) typ ++ maybe "" ((++) " = " . show) expr ++ ";"
+    show (DeclVar ident typ expr mut) = bool "let " "var " mut ++ show ident ++ maybe ""  ((++) ": " . show) typ ++ maybe "" ((++) " = " . show) expr ++ ";"
 
 newtype Return = Return Expr
 
@@ -48,7 +48,7 @@ instance Show Statement where
 data Block = Block [Statement] Expr
 
 instance Show Block where
-    show (Block stmts expr) = "{ " ++ unwords (map show stmts) ++ " " ++ show expr ++ " }" 
+    show (Block stmts expr) = "{ " ++ unwords (map show stmts) ++ " " ++ show expr ++ " }"
 
 data FuncDecl = FuncDecl Identifier [FuncDeclParam] Block
 
@@ -97,10 +97,10 @@ parseVarDecl = do
     typ <- optionMaybe (try $ spaces >> char ':' >> spaces >> parseType)
     expr <- optionMaybe (try $ spaces >> char '=' >> spaces >> parseExpression)
     char ';'
-    let mutator = case mutatorStr of
+    let mutable = case mutatorStr of
             "let" -> False
             "var" -> True
-        decl = DeclVar ident typ expr mutator
+        decl = DeclVar ident typ expr mutable
         in if validateDecl decl
             then return decl
             else fail "The decl is invalid!"
@@ -133,7 +133,7 @@ parseFuncDecl = do
     FuncDecl ident params <$> (spaces >> parseBlock)
 
 readParser :: Parser a -> String -> Either String a
-readParser parser input = case parse parser "dusk" input of 
+readParser parser input = case parse parser "dusk" input of
     Left  err -> Left $ show err
     Right val -> Right val
 
