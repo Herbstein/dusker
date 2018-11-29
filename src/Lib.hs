@@ -1,5 +1,6 @@
 module Lib where
 
+import           Data.Bool
 import           Data.List
 import           Text.ParserCombinators.Parsec
 import           Text.ParserCombinators.Parsec.Token
@@ -30,10 +31,7 @@ instance Show Expr where
 data Decl = DeclVar Identifier (Maybe Type) (Maybe Expr) Bool
 
 instance Show Decl where
-    show (DeclVar ident typ Nothing True) = "var " ++ show ident ++ maybe ""  ((++) ": " . show) typ ++ ";"
-    show (DeclVar ident typ Nothing False) = "INVALID! let " ++ show ident ++ maybe "" show typ ++ ";"
-    show (DeclVar ident typ (Just expr) True) = "var " ++ show ident ++ maybe "" show typ ++ " = " ++ show expr ++ ";"
-    show (DeclVar ident typ (Just expr) False) = "let " ++ show ident ++ maybe "" show typ ++ " = " ++ show expr ++ ";"
+    show (DeclVar ident typ expr mut) = bool "var " "let " mut ++ show ident ++ maybe ""  ((++) ": " . show) typ ++ maybe "" ((++) " = " . show) expr ++ ";"
 
 newtype Return = Return Expr
 
