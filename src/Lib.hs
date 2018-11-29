@@ -137,7 +137,7 @@ readParser parser input = case parse parser "dusk" input of
     Left  err -> Left $ show err
     Right val -> Right val
 
- -- { var x = 5; var y = 6; hello } <-- that works!
+ -- fn main(argc: int32) { var x: int32; let y = 6; y } <-- that works!
 final :: String -> String
 final x = (case readParser parseFuncDecl x of
             Left err -> err
