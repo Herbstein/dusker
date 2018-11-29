@@ -30,7 +30,7 @@ instance Show Expr where
 data Decl = DeclVar Identifier (Maybe Type) (Maybe Expr) Bool
 
 instance Show Decl where
-    show (DeclVar ident typ Nothing True) = "var " ++ show ident ++ maybe ""  (\t -> ": " ++ show t) typ ++ ";"
+    show (DeclVar ident typ Nothing True) = "var " ++ show ident ++ maybe ""  ((++) ": " . show) typ ++ ";"
     show (DeclVar ident typ Nothing False) = "INVALID! let " ++ show ident ++ maybe "" show typ ++ ";"
     show (DeclVar ident typ (Just expr) True) = "var " ++ show ident ++ maybe "" show typ ++ " = " ++ show expr ++ ";"
     show (DeclVar ident typ (Just expr) False) = "let " ++ show ident ++ maybe "" show typ ++ " = " ++ show expr ++ ";"
