@@ -50,10 +50,10 @@ data Block = Block [Statement] Expr
 instance Show Block where
     show (Block stmts expr) = "{ " ++ unwords (map show stmts) ++ " " ++ show expr ++ " }"
 
-data FuncDecl = FuncDecl Identifier [FuncDeclParam] Block
+data FuncDecl = FuncDecl Identifier [FuncDeclParam] Type Block
 
 instance Show FuncDecl where
-    show (FuncDecl ident params block) = "fn " ++ show ident ++ "(" ++ intercalate ", " (map show params) ++ ") " ++ show block
+    show (FuncDecl ident params ret block) = "fn " ++ show ident ++ "(" ++ intercalate ", " (map show params) ++ "): " ++ show ret ++ " " ++ show block
 
 res = ["let", "var"]
 
@@ -130,14 +130,15 @@ parseFuncDecl :: Parser FuncDecl
 parseFuncDecl = do
     ident <- string "fn" >> spaces1 >> parseIdentifier
     params <- spaces >> char '(' >> (parseFuncDeclParam `sepBy` (char ',' >> spaces)) <* char ')'
-    FuncDecl ident params <$> (spaces >> parseBlock)
+    ret <- spaces >> char ':' >> spaces >> parseType
+    FuncDecl ident params ret <$> (spaces >> parseBlock)
 
 readParser :: Parser a -> String -> Either String a
 readParser parser input = case parse parser "dusk" input of
     Left  err -> Left $ show err
     Right val -> Right val
 
- -- fn main(argc: int32) { var x: int32; let y = 6; y } <-- that works!
+ -- fn main(argc: int32): void { var x: int32; let y = 6; y } <-- that works!
 final :: String -> String
 final x = (case readParser parseFuncDecl x of
             Left err -> err
